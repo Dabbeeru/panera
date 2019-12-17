@@ -1,0 +1,60 @@
+steps:
+- name: 'gcr.io/cloud-builders/gsutil'
+  args:
+  - '-m'
+  - 'rsync'
+  - '-r'
+  - 'gs://${_BUCKET}/cache/.m2'
+  - '/cache/.m2'
+  volumes:
+  - path: '/cache/.m2'
+    name: 'm2_cache'
+    
+- name: 'gcr.io/cloud-builders/git'
+  args: ['clone', 'https://source.developers.google.com/p/${_PROJECT}/r/${_MICROSERVICE_REPO}', '--branch', '${_DEV_BRANCH}']
+
+- name: 'gcr.io/cloud-builders/mvn'
+  args: ['-DskipTests', 'clean', 'package', '-f','./${_MICROSERVICE_REPO}/pom.xml','-q']
+  volumes:
+  - path: '/cache/.m2'
+    name: 'm2_cache'
+  env:
+  - MAVEN_OPTS=-Dmaven.repo.local=/cache/.m2
+  
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['push', 'gcr.io/${_PROJECT}/${_CONTAINERNAME}:${_POM_XML_VERSION}']
+  
+# - name: 'gcr.io/cloud-builders/kubectl'
+  # args:
+  # - 'set'
+  # - 'image'
+  # - 'deployment/${_DEPLOYMENTNAME}'
+  # - '${_DEPLOYMENTNAME}=gcr.io/${_PROJECT}/${_CONTAINERNAME}:${_POM_XML_VERSION}'
+  # - '-n' 
+  # - '${_GKE_NAMESPACE}'  
+  # env:
+  # - 'CLOUDSDK_COMPUTE_REGION=${_REGION}'
+  # - 'CLOUDSDK_CONTAINER_CLUSTER=${_GKE_CLUSTER}'
+  
+substitutions:
+    #GCP Specific configuration. Please DON'T change anything
+    _PROJECT: tretail-dev-marketplace
+    _BUCKET: tretail-dev-marketplace-cloudbuild
+    _GKE_NAMESPACE: backend-microservices
+    _REGION: us-east4
+    _GKE_CLUSTER: tretail-dev-com-kbe-marketplace-1
+    
+    #Microservice Specific configuration. DevOps can change this settings
+    _DEPLOYMENTNAME: dsp-menu-generation-service
+    _CONTAINERNAME: dsp-menu-generation-service    
+    _MICROSERVICE_REPO: springboot-app-MenuGenerationService
+    _DEV_BRANCH: feature-dille
+
+    
+    # Developers ONLY change this and should be in sync with your pom.xml
+
+    _POM_XML_VERSION: 0.0.23-devops-SNAPSHOT
+    
+options:
+    substitution_option: 'ALLOW_LOOSE'
+

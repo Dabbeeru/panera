@@ -1,0 +1,45 @@
+steps:
+
+- name: 'gcr.io/cloud-builders/gcloud'
+  args:
+  - 'beta'
+  - 'container'
+  - 'clusters'
+  - 'get-credentials'
+  - '${_GKE_CLUSTER}'
+  - '--region'  
+  - '${_REGION}'
+  - '--project'
+  - '${_PROJECT}' 
+
+- name: 'gcr.io/cloud-builders/kubectl'
+  args:
+  - 'set'
+  - 'image'
+  - 'deployment/${_DEPLOYMENTNAME}'
+  - '${_DEPLOYMENTNAME}=gcr.io/${_PROJECT_DEV}/${_CONTAINERNAME}:${_POM_XML_VERSION}'
+  - '-n' 
+  - '${_GKE_NAMESPACE}'  
+    
+  env:
+  - 'CLOUDSDK_COMPUTE_REGION=${_REGION}'
+  - 'CLOUDSDK_CONTAINER_CLUSTER=${_GKE_CLUSTER}'
+  
+substitutions:
+    #GCP Specific configuration. Please DON'T change anything
+    _PROJECT: tretail-qa-marketplace
+    _PROJECT_DEV: tretail-dev-marketplace    
+    _GKE_NAMESPACE: backend-microservices
+    _REGION: us-east4
+    _GKE_CLUSTER: tretail-qa-com-kbe-marketplace-1
+    
+    #Microservice Specific configuration. DevOps can change this settings
+    _DEPLOYMENTNAME: dsp-menu-generation-service
+    _CONTAINERNAME: dsp-menu-generation-service
+    
+    # Developers ONLY change this and should be in sync with your pom.xml
+    _POM_XML_VERSION: 0.0.17-SNAPSHOT
+    
+options:
+    substitution_option: 'ALLOW_LOOSE'
+

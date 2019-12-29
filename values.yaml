@@ -1,0 +1,67 @@
+# Default values for dsp-menu-generation-service.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+namespace: dille-test
+replicaCount: 1
+image:
+  repository: gcr.io/tretail-dev-marketplace/dsp-menu-generation-service
+  tag: 0.0.23-devops-SNAPSHOT
+  pullPolicy: IfNotPresent
+service:
+  type: NodePort
+  internalport: 9005
+  externalport: 9005
+ingress:
+  enabled: false
+  annotations: {}
+    # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+  hosts:
+    - host: dsp-menu-generation-service.example.com 
+      paths: /dsp-menu-generation-service/*
+       
+
+  #tls: []
+  #  - secretName: chart-example-tls
+  #    hosts:
+  #      - chart-example.local
+
+resources: 
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  limits:
+  #   cpu: 100m
+    memory: 294Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
+rollingUpdate:
+  maxSurge: 1
+  maxUnavailable: 1
+java_opts: "-Xmx256m -Xms256m"
+livenessProbe:
+  failureThreshold: 3
+  httpGet:
+    path: /actuator/health
+    port: 9005
+    scheme: HTTP
+  initialDelaySeconds: 45
+  periodSeconds: 10
+  successThreshold: 1
+  timeoutSeconds: 5
+readinessProbe:
+  failureThreshold: 5
+  httpGet:
+    path: /actuator/health
+    port: 9005
+    scheme: HTTP
+  initialDelaySeconds: 30
+  periodSeconds: 10
+  successThreshold: 1
+  timeoutSeconds: 5
+
+
+
+

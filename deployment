@@ -1,0 +1,93 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "dsp-menu-generation-service.fullname" . }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    app.kubernetes.io/name: {{ include "dsp-menu-generation-service.name" . }}
+    helm.sh/chart: {{ include "dsp-menu-generation-service.chart" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "dsp-menu-generation-service.name" . }}
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  strategy:
+    rollingUpdate: 
+      maxSurge: {{ .Values.rollingUpdate.maxSurge }}
+      maxUnavailable: {{ .Values.rollingUpdate.maxUnavailable }}
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: {{ include "dsp-menu-generation-service.name" . }}
+        app.kubernetes.io/instance: {{ .Release.Name }}
+    spec:
+      containers:
+      - name: {{ include "dsp-menu-generation-service.name" . }}
+        env:
+        - name: JAVA_OPTS
+          value: {{ .Values.java_opts }}
+        - name: spring-datasource-instance-connection-name
+          valueFrom:
+            configMapKeyRef:
+              name:  {{ include "dsp-menu-generation-service.fullname" . }}-config
+              key: spring-datasource-instance-connection-name
+        - name: spring-datasource-database-name
+          valueFrom:
+            configMapKeyRef:
+              name: {{ include "dsp-menu-generation-service.fullname" . }}-config
+              key: spring-datasource-database-name
+        - name: spring-datasource-username
+          valueFrom:
+            configMapKeyRef:
+              name: {{ include "dsp-menu-generation-service.fullname" . }}-config
+              key: spring-datasource-username
+        - name: spring-datasource-password
+          valueFrom:
+            configMapKeyRef:
+              name: {{ include "dsp-menu-generation-service.fullname" . }}-config
+              key: spring-datasource-password  
+        - name: menugeneration-integration-url
+          valueFrom:
+            configMapKeyRef:
+              name: {{ include "dsp-menu-generation-service.fullname" . }}-config
+              key: menugeneration-integration-url   
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        ports:
+          - containerPort: {{ .Values.service.internalport }}
+          #protocol: TCP
+        resources: 
+          limits:
+            memory: {{ .Values.resources.limits.memory }}
+        livenessProbe:
+          httpGet:
+            path: {{ .Values.livenessProbe.httpGet.path }}
+            port: {{ .Values.livenessProbe.httpGet.port }}
+          initialDelaySeconds: {{ .Values.livenessProbe.initialDelaySeconds }}
+          periodSeconds: {{ .Values.livenessProbe.periodSeconds }}
+          successThreshold: {{ .Values.livenessProbe.successThreshold }}
+          failureThreshold: {{ .Values.livenessProbe.failureThreshold }}
+          timeoutSeconds: {{ .Values.livenessProbe.timeoutSeconds }}
+        readinessProbe:
+          httpGet:
+            path: {{ .Values.readinessProbe.httpGet.path }}
+            port: {{ .Values.readinessProbe.httpGet.port }}
+          initialDelaySeconds: {{ .Values.livenessProbe.initialDelaySeconds }}
+          periodSeconds: {{ .Values.livenessProbe.periodSeconds }}
+          successThreshold: {{ .Values.livenessProbe.successThreshold }}
+          failureThreshold: {{ .Values.livenessProbe.failureThreshold }}
+          timeoutSeconds: {{ .Values.livenessProbe.timeoutSeconds }}
+        volumeMounts:
+        - mountPath: /root/key.json
+          name: secrets
+          subPath: key.json
+          readOnly: false
+      volumes:
+      - name: secrets
+        secret:
+          defaultMode: 0666
+          secretName: dsp-menu-generation-service

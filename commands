@@ -1,0 +1,54 @@
+      sudo yum update
+      sudo yum install java-1.8.0-openjdk-devel
+      curl --silent --location http://pkg.jenkins-ci.org/redhat-stable/jenkins.repo | sudo tee /etc/yum.repos.d/jenkins.repo
+     sudo rpm --import https://jenkins-ci.org/redhat/jenkins-ci.org.key
+     sudo yum install jenkins
+     sudo systemctl start jenkins
+     systemctl status jenkins
+     sudo systemctl enable jenkins
+     sudo firewall-cmd --permanent --zone=public --add-port=8080/tcp
+     sudo cat /var/lib/jenkins/secrets/initialAdminPassword
+    
+    sudo wget http://mirrors.estointernet.in/apache/maven/maven-3/3.6.0/binaries/apache-maven-3.6.0-bin.tar.gz
+     sudo tar -xvzf ~/Downloads/apache-maven-3.6.0-bin.tar.gz
+     ls
+     sudo tar zxvf apache-maven-3.6.0-bin.tar.gz
+     M2_HOME="/opt/apache-maven-3.6.0"
+     /opt/apache-maven-3.6.0/bin
+     sudo nano /etc/environment
+     ls
+     cd /opt
+     ls
+     sudo update-alternatives --install "/usr/bin/mvn" "mvn" "/opt/apache-maven-3.6.0/bin/mvn" 0
+     sudo update-alternatives --set mvn /opt/apache-maven-3.6.0/bin/mvn
+     sudo wget https://raw.github.com/dimaj/maven-bash-completion/master/bash_completion.bash --output-document /etc/bash_completion.d/mvn
+     exit
+     mvn --version
+	 which java
+     which mvn
+     export PATH=$M2:$PATH
+     which mvn
+     sudo yum install git
+     which git
+	 
+	  git init
+     git add *
+     git commit -m "first commit"
+     git remote add origin https://github.com/Dabbeeru/Dilleswari.git
+     git push -u origin master
+     git push -u origin master
+
+     kuber net 
+	 
+	 curl -Lo minikube https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64 && chmod +x minikube && sudo mv minikube /usr/local/bin/
+	 
+	 	
+minikube version    check the version
+     
+1
+sudo -i   to run kubernet
+minikube start --vm-driver=none    to start kubernet
+
+
+
+

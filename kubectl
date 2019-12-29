@@ -1,0 +1,40 @@
+        kubectl get nodes
+    3  gcloud container clusters get-credentials pilot-ssv-com-kbe-devops-cluster-1 --zone europe-west2-a --project techco-pret-pilot
+    4  kubectl get node
+    5  wget https://storage.googleapis.com/kubernetes-helm/helm-v2.13.1-linux-amd64.tar.gz
+    6  
+    7  tar -xvzf helm-v2.13.1-linux-amd64.tar.gz
+    8  helm init
+    9  ls
+   10  cd linux-amd64/
+   11  helm init
+  12  ls
+   13  pwd
+   14  helm init
+   15  ./helm
+   16  ./helm init
+   17  kubectl create serviceaccount --namespace kube-system tiller
+   18  kubectl create clusterrolebinding tiller-cluster-rule --clusterrole=cluster-admin --serviceaccount=kube-system:tiller
+   19  kubectl create clusterrolebinding tiller-binding --clusterrole=cluster-admin --serviceaccount kube-system:tiller
+   20  helm init --service-account tiller
+   21  ./helm init --service-account tiller
+   22  kubectl get pod -n kube-system
+   23  ./helm --upgrade
+   24  ./helm init --upgrade --service-account tiller
+   25  kubectl get pod
+   26  kubectl get pod -n kube-system
+   27  kubectl apply -f https://raw.githubusercontent.com/jenkinsci/kubernetes-plugin/master/src/main/kubernetes/service-account.yml
+   28  
+   29  clear
+   30  kubectl create clusterrolebinding lax-cluster-admin-binding   --clusterrole=cluster-admin   --user=sruthi.av@capgemini.com
+   31  kubectl apply -f https://raw.githubusercontent.com/jenkinsci/kubernetes-plugin/master/src/main/kubernetes/service-account.yml
+   32  kubectl create clusterrolebinding jenkins --clusterrole cluster-admin --serviceaccount=jenkins:default
+   33  ./helm install --name=jenkins --namespace=jenkins --set Persistence.Size=8G stable/jenkins
+   34  kubectl get namesapce
+   35  kubectl get namespace
+   36  ./helm install --name=jenkins --namespace=jenkins  stable/jenkins
+   37  ./helm status
+   38  ./helm ls
+   39  ./helm status jenkins
+   40  printf $(kubectl get secret --namespace jenkins jenkins -o jsonpath="{.data.jenkins-admin-password}" | base64 --decode);echo
+   41  history
